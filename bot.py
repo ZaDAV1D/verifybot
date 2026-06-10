@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
 
-TOKEN = ""
+import os
+
+TOKEN = os.getenv("TOKEN")  # חשוב לRender
 
 VERIFIED_ROLE_ID = 1514345499711504628
 VERIFY_CHANNEL_ID = 1514345739273113721
@@ -63,7 +65,6 @@ async def on_ready():
         await channel.send(embed=embed, view=VerifyView())
 
         panel_sent = True
-
     else:
         print("❌ Verify channel not found")
 
