@@ -1,9 +1,26 @@
 import discord
 from discord.ext import commands
-
 import os
+from flask import Flask
+from threading import Thread
 
-TOKEN = os.getenv("TOKEN")  # חשוב לRender
+# ===== WEB SERVER (בשביל Render) =====
+app = Flask("")
+
+@app.route("/")
+def home():
+    return "Bot is alive"
+
+def run_web():
+    app.run(host="0.0.0.0", port=10000)
+
+def keep_alive():
+    t = Thread(target=run_web)
+    t.start()
+
+# ===== DISCORD BOT =====
+
+TOKEN = os.getenv("TOKEN")
 
 VERIFIED_ROLE_ID = 1514345499711504628
 VERIFY_CHANNEL_ID = 1514345739273113721
@@ -27,7 +44,7 @@ class VerifyView(discord.ui.View):
 
         if role in interaction.user.roles:
             return await interaction.response.send_message(
-                "✔️ אתה כבר מאומת",
+                "✔️ כבר מאומת",
                 ephemeral=True
             )
 
@@ -39,7 +56,7 @@ class VerifyView(discord.ui.View):
             )
         except:
             await interaction.response.send_message(
-                "❌ אין לי הרשאה לתת רול",
+                "❌ אין הרשאה לתת רול",
                 ephemeral=True
             )
 
@@ -65,8 +82,8 @@ async def on_ready():
         await channel.send(embed=embed, view=VerifyView())
 
         panel_sent = True
-    else:
-        print("❌ Verify channel not found")
 
 
+# ===== RUN BOTH =====
+keep_alive()
 bot.run(TOKEN)
